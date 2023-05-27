@@ -1,0 +1,17 @@
+{
+    "name": "zeth/amqp_handler",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Zeth\\AmqpHandler\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Marcio T Rodrigues",
+            "email": "marcio.rodrigues@boxti.com.br"
+        }
+    ],
+    "require": {}
+}
