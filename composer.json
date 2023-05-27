@@ -2,6 +2,7 @@
     "name": "zeth/amqp_handler",
     "type": "library",
     "license": "MIT",
+    "version":  "1.0.2",
     "autoload": {
         "psr-4": {
             "Zeth\\AmqpHandler\\": "src/"
@@ -13,5 +14,7 @@
             "email": "marcio.rodrigues@boxti.com.br"
         }
     ],
-    "require": {}
+    "require": {
+        "php-amqplib/php-amqplib": "^3.5"
+    }
 }
