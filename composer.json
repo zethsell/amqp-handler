@@ -2,7 +2,6 @@
   "name": "zeth/amqp_handler",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.6",
   "autoload": {
     "psr-4": {
       "Zeth\\AmqpHandler\\": "src/"
