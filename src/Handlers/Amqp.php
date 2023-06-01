@@ -2,29 +2,31 @@
 
 namespace Zeth\AmqpHandler;
 
-use PhpAmqpLib\Channel\AbstractChannel;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Amqp
 {
     protected static AMQPStreamConnection $connection;
-    protected static AbstractChannel $channel;
+    protected static AMQPChannel $channel;
+    protected static string $queue;
 
-    private function __contruct(string $host, int $port, string $username, string $password, string $channel)
+    private function __construct(string $host, int $port, string $username, string $password)
     {
         self::$connection = new AMQPStreamConnection($host, $port, $username, $password);
-        self::$connection->channel($channel);
+        self::$channel = self::$connection->channel();
     }
 
-    public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?string $channel)
+    public static function connect(?string $host, ?int $port, ?string $username, ?string $password)
     {
-        return new Amqp($host, $port, $username, $password, $channel);
+        return new Amqp($host, $port, $username, $password);
     }
 
-    public function queue(string|int $channel): Amqp
+    public function queue(string $queue): Amqp
     {
-        self::$channel->queue_declare($channel, false, true, false, false);
+        self::$queue = $queue;
+        self::$channel->queue_declare($queue,  false, true, false, false);
         return $this;
     }
 
@@ -33,14 +35,19 @@ class Amqp
         self::$channel->basic_publish($payload, $exchange, $route);
     }
 
-    public function consume(string $queue, callable $callback): void
+    public function consume(callable $callback): void
     {
-        self::$channel->basic_consume($queue, false, true, false, false, $callback);
+        self::$channel->basic_consume(self::$queue, '', false, true, false, false, $callback);
     }
 
     public function isConsuming()
     {
         return self::$channel->is_consuming();
+    }
+
+    public function wait()
+    {
+        return self::$channel->wait();
     }
 
     public function close(): void
