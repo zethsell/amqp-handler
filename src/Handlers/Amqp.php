@@ -30,7 +30,7 @@ class Amqp
         return $this;
     }
 
-    public function publish(AMQPMessage $payload, string $exchange, string $route)
+    public function publish(AMQPMessage $payload, string $route, string $exchange = '')
     {
         self::$channel->basic_publish($payload, $exchange, $route);
     }
