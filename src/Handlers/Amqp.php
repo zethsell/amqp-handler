@@ -12,15 +12,17 @@ class Amqp
     protected static AMQPChannel $channel;
     protected static string $queue;
 
-    private function __construct(string $host, int $port, string $username, string $password)
+    private function __construct(string $host, int $port, string $username, string $password, $ssl = null)
     {
-        self::$connection = new AMQPStreamConnection($host, $port, $username, $password);
+        self::$connection = AMQPStreamConnection::create_connection([
+            ['host' => $host, 'port' =>  $port, 'user' =>  $username, 'password' => $password, 'ssl_protocol' => $ssl],
+        ]);
         self::$channel = self::$connection->channel();
     }
 
-    public static function connect(?string $host, ?int $port, ?string $username, ?string $password)
+    public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?bool $ssl)
     {
-        return new Amqp($host, $port, $username, $password);
+        return new Amqp($host, $port, $username, $password, $ssl);
     }
 
     public function queue(string $queue): Amqp
