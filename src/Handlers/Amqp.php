@@ -3,6 +3,7 @@
 namespace Zeth\AmqpHandler;
 
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPSSLConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -12,11 +13,19 @@ class Amqp
     protected static AMQPChannel $channel;
     protected static string $queue;
 
-    private function __construct(string $host, int $port, string $username, string $password, $ssl = null)
+    private function __construct(string $host, int $port, string $username, string $password, ?bool $ssl = null)
     {
-        self::$connection = AMQPStreamConnection::create_connection([
-            ['host' => $host, 'port' =>  $port, 'user' =>  $username, 'password' => $password, 'ssl_protocol' => $ssl],
-        ]);
+        self::$connection = (is_null($ssl))
+            ? new AMQPStreamConnection($host, $port, $username, $password)
+            : new AMQPSSLConnection(
+                $host,
+                $port,
+                $username,
+                $password,
+                '/',
+                ['verify_peer' => true],
+            );
+
         self::$channel = self::$connection->channel();
     }
 
@@ -28,7 +37,7 @@ class Amqp
     public function queue(string $queue): Amqp
     {
         self::$queue = $queue;
-        self::$channel->queue_declare($queue,  false, true, false, false);
+        self::$channel->queue_declare($queue, false, true, false, false);
         return $this;
     }
 
