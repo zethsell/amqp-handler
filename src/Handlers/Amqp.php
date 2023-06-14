@@ -15,7 +15,7 @@ class Amqp
 
     public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?bool $ssl)
     {
-        self::$connection = (is_null($ssl))
+        self::$connection = (!$ssl)
             ? new AMQPStreamConnection($host, $port, $username, $password)
             : new AMQPSSLConnection(
                 $host,
@@ -24,7 +24,6 @@ class Amqp
                 $password,
                 '/',
                 ['verify_peer' => true],
-                // ['keepalive' => true],
             );
 
         self::$channel = self::$connection->channel();
