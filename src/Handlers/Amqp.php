@@ -24,7 +24,7 @@ class Amqp
                 $password,
                 '/',
                 ['verify_peer' => true],
-                ['keepalive' => true],
+                // ['keepalive' => true],
             );
 
         self::$channel = self::$connection->channel();
