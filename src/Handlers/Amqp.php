@@ -3,6 +3,7 @@
 namespace Zeth\AmqpHandler;
 
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AMQPConnectionConfig;
 use PhpAmqpLib\Connection\AMQPSSLConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -12,9 +13,15 @@ class Amqp
     protected static AMQPStreamConnection $connection;
     protected static AMQPChannel $channel;
     protected static string $queue;
+    protected static array $data;
 
-    public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?bool $ssl)
+    public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?bool $ssl, ?string $connectionName = '')
     {
+
+        $connectionConfig = new AMQPConnectionConfig();
+        $connectionConfig->setConnectionName($connectionName);
+
+        self::$data = compact('host',  'port',  'username',  'password', 'ssl', 'connectionName');
         self::$connection = (!$ssl)
             ? new AMQPStreamConnection($host, $port, $username, $password)
             : new AMQPSSLConnection(
@@ -24,6 +31,9 @@ class Amqp
                 $password,
                 '/',
                 ['verify_peer' => true],
+                [],
+                'ssl',
+                $connectionConfig
             );
 
         self::$channel = self::$connection->channel();
@@ -62,5 +72,18 @@ class Amqp
     {
         self::$channel->close();
         self::$connection->close();
+    }
+
+    public function renewConnection()
+    {
+        self::close();
+        self::connect(
+            self::$data['host'],
+            self::$data['port'],
+            self::$data['username'],
+            self::$data['password'],
+            self::$data['ssl'],
+            self::$data['connectionName']
+        );
     }
 }
