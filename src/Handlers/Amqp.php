@@ -31,7 +31,7 @@ class Amqp
                 $password,
                 '/',
                 ['verify_peer' => true],
-                ['read_write_timeout' => 60, 'heartbeat' => 30],
+                ['read_write_timeout' => 360, 'heartbeat' => 40],
                 'ssl',
                 $connectionConfig
             );
