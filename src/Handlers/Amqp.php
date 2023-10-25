@@ -15,6 +15,9 @@ class Amqp
     protected static string $queue;
     protected static array $data;
 
+    /**
+     * @throws \Exception
+     */
     public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?bool $ssl, ?string $connectionName = '')
     {
 
@@ -32,7 +35,6 @@ class Amqp
                 '/',
                 ['verify_peer' => true],
                 ['read_write_timeout' => 360, 'heartbeat' => 40],
-                'ssl',
                 $connectionConfig
             );
 
