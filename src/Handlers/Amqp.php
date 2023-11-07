@@ -14,12 +14,10 @@ class Amqp
     protected static AMQPChannel $channel;
     protected static string $queue;
     protected static array $data;
-
     private $waitAllowedMethods = null;
     private bool $waitNonBlocking = false;
     private $waitTimeout = 0;
     private $consumeNoAck = false;
-
 
     private static AMQPConnectionConfig $connectionConfig;
 
@@ -40,6 +38,8 @@ class Amqp
                 ['verify_peer' => true],
                 [],
                 self::$connectionConfig
+                ['read_write_timeout' => 360, 'heartbeat' => 40],
+                $connectionConfig
             );
 
         self::$channel = self::$connection->channel();
