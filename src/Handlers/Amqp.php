@@ -15,11 +15,18 @@ class Amqp
     protected static string $queue;
     protected static array $data;
 
+    private $waitAllowedMethods = null;
+    private bool $waitNonBlocking = false;
+    private $waitTimeout = 0;
+    private $consumeNoAck = false;
+
+
+    private static AMQPConnectionConfig $connectionConfig;
+
     public static function connect(?string $host, ?int $port, ?string $username, ?string $password, ?bool $ssl, ?string $connectionName = '')
     {
-
-        $connectionConfig = new AMQPConnectionConfig();
-        $connectionConfig->setConnectionName($connectionName);
+        self::$connectionConfig = new AMQPConnectionConfig();
+        self::$connectionConfig->setConnectionName($connectionName);
 
         self::$data = compact('host',  'port',  'username',  'password', 'ssl', 'connectionName');
         self::$connection = (!$ssl)
@@ -32,8 +39,7 @@ class Amqp
                 '/',
                 ['verify_peer' => true],
                 [],
-                'ssl',
-                $connectionConfig
+                self::$connectionConfig
             );
 
         self::$channel = self::$connection->channel();
@@ -44,7 +50,7 @@ class Amqp
     public function queue(string $queue): Amqp
     {
         self::$queue = $queue;
-        self::$channel->queue_declare($queue, false, true, false, false);
+        self::$channel->queue_declare($queue, false, false, false, true);
         return $this;
     }
 
@@ -55,7 +61,7 @@ class Amqp
 
     public function consume(callable $callback): void
     {
-        self::$channel->basic_consume(self::$queue, '', false, true, false, false, $callback);
+        self::$channel->basic_consume(self::$queue, '', false,  false, $this->consumeNoAck, false, $callback);
     }
 
     public function isConsuming()
@@ -65,7 +71,7 @@ class Amqp
 
     public function wait()
     {
-        return self::$channel->wait();
+        return self::$channel->wait($this->waitAllowedMethods, $this->waitNonBlocking, $this->waitTimeout);
     }
 
     public function close(): void
@@ -85,5 +91,25 @@ class Amqp
             self::$data['ssl'],
             self::$data['connectionName']
         );
+    }
+
+
+    public function getWaitTimeout(){
+        return $this->waitTimeout;
+    }
+
+    public function getChannel(){
+        return self::$channel;
+    }
+
+    public function setWaitTimeout($waitTimeout = 0){
+        $this->waitTimeout = $waitTimeout;
+        return $this;
+    }
+
+    public function setConsumeNoAck(bool $consumeNoAck): Amqp
+    {
+        $this->consumeNoAck = $consumeNoAck;
+        return $this;
     }
 }
