@@ -36,10 +36,8 @@ class Amqp
                 $password,
                 '/',
                 ['verify_peer' => true],
-                [],
-                self::$connectionConfig
                 ['read_write_timeout' => 360, 'heartbeat' => 40],
-                $connectionConfig
+                self::$connectionConfig
             );
 
         self::$channel = self::$connection->channel();

@@ -60,9 +60,9 @@ class PhpAmqpService
                 $this->port,
                 $this->username,
                 $this->password,
-                '/',
-                ['verify_peer' => true],
-                [],
+                $this->vhost,
+                ['verify_peer' => false],
+                ['read_write_timeout' => 360, 'heartbeat' => 40],
                 $this->config
             );
 
@@ -76,9 +76,10 @@ class PhpAmqpService
         $this->port         = $connectParametersDTO->port;
         $this->username     = $connectParametersDTO->username;
         $this->password     = $connectParametersDTO->password;
-        $this->ssl_protocol = $connectParametersDTO->ssl;
+        $this->ssl          = $connectParametersDTO->ssl;
         $this->connectionName = $connectParametersDTO->connectionName;
         $this->waitTimeout  = $connectParametersDTO->timeout;
+        $this->vhost        = $connectParametersDTO->vhost;
         return $this;
     }
 
@@ -86,6 +87,12 @@ class PhpAmqpService
     {
         $this->queue = $queue;
         $this->channel->queue_declare($queue, false, $this->queueDurable, false, $this->queueAutoDelete);
+        return $this;
+    }
+
+    public function queueDelete(string $queue): self
+    {
+        $this->channel->queue_delete($queue);
         return $this;
     }
 

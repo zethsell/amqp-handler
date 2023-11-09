@@ -11,6 +11,7 @@ class ConnectParametersDTO
     public readonly bool $ssl;
     public readonly string $connectionName;
     public readonly string $timeout;
+    public readonly string $vhost;
 
     public function __construct(public readonly array $_data)
     {
@@ -21,5 +22,6 @@ class ConnectParametersDTO
         $this->ssl              = $_data['ssl']  ?? false;
         $this->connectionName   = $_data['connectionName']  ?? 'defaultName';
         $this->timeout          = $_data['timeout']  ?? 0;
+        $this->vhost            = $_data['vhost']  ?? '/';
     }
 }
