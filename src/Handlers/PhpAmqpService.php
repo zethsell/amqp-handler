@@ -80,6 +80,7 @@ class PhpAmqpService
         $this->connectionName = $connectParametersDTO->connectionName;
         $this->waitTimeout  = $connectParametersDTO->timeout;
         $this->vhost        = $connectParametersDTO->vhost;
+        $this->consumeNoAck = $connectParametersDTO->consumeNoAck;
         return $this;
     }
 
@@ -103,7 +104,7 @@ class PhpAmqpService
 
     public function consume(callable $callback): void
     {
-        $this->channel->basic_consume($this->queue, '', false, false, $this->consumeNoAck, false, $callback);
+        $this->channel->basic_consume($this->queue, '', false, $this->consumeNoAck, false,  false, $callback);
     }
 
     public function isConsuming()

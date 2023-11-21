@@ -4,6 +4,7 @@ namespace Zeth\AmqpHandler\DTO;
 
 class ConnectParametersDTO
 {
+    public readonly bool $consumeNoAck;
     public readonly string $host;
     public readonly int $port;
     public readonly string $username;
@@ -23,5 +24,7 @@ class ConnectParametersDTO
         $this->connectionName   = $_data['connectionName']  ?? 'defaultName';
         $this->timeout          = $_data['timeout']  ?? 0;
         $this->vhost            = $_data['vhost']  ?? '/';
+        $this->consumeNoAck     = $_data['consumeNoAck']  ?? false;
+        
     }
 }
