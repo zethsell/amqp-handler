@@ -43,6 +43,9 @@ class PhpAmqpService
     private bool $consumeNoAck = false;
     private bool $queueDurable = false;
     private bool $queueAutoDelete = false;
+    private bool $exchangeAutoDelete = false;
+    private bool $exchangeDurable = true;
+    private string $exchangeType = 'direct';
 
 
     public function connect(): self
@@ -81,6 +84,17 @@ class PhpAmqpService
         $this->waitTimeout  = $connectParametersDTO->timeout;
         $this->vhost        = $connectParametersDTO->vhost;
         $this->consumeNoAck = $connectParametersDTO->consumeNoAck;
+        return $this;
+    }
+
+    public function exchangeDeclare($exchangeName){
+        $this->channel->exchange_declare(
+            $exchangeName, 
+            $this->exchangeType, # type
+            false,    # passive
+            $this->exchangeDurable,    # durable
+            $this->exchangeAutoDelete     # auto_delete
+        );
         return $this;
     }
 
