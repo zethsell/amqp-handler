@@ -92,8 +92,8 @@ class PhpAmqpService
             $exchangeName, 
             $this->exchangeType, # type
             false,    # passive
-            $this->queueDurable,    # durable
-            $this->queueAutoDelete     # auto_delete
+            $this->exchangeDurable,    # durable
+            $this->exchangeAutoDelete     # auto_delete
         );
         return $this;
     }
@@ -102,6 +102,7 @@ class PhpAmqpService
     {
         $this->queue = $queue;
         $this->channel->queue_declare($queue, false, $this->queueDurable, false, $this->queueAutoDelete);
+//        $this->channel->queue_declare($queue, false, $this->queueDurable, false, $this->queueAutoDelete);
         return $this;
     }
 
